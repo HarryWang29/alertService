@@ -20,6 +20,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	err = config.ParseProvinceCodeFromFile("ProvinceCode.json")
+	if err != nil {
+		panic(err)
+	}
 	myApp := config.NewApp()
 	err = myApp.Parse(conf)
 	if err != nil {

@@ -1,22 +1,9 @@
 package job
 
-import (
-	"encoding/json"
-	"github.com/sirupsen/logrus"
-	"io/ioutil"
-)
-
 var locationMap = make(map[string]interface{})
 
-func init() {
-	bs, err := ioutil.ReadFile("ProvinceCode.json")
-	if err != nil {
-		logrus.Fatalf("ioutil.ReadFile ProvinceCode.json err: %v", err)
-	}
-	err = json.Unmarshal(bs, &locationMap)
-	if err != nil {
-		logrus.Fatalf("json.Unmarshal err: %v", err)
-	}
+func SetLocationMap(m map[string]interface{}) {
+	locationMap = m
 }
 
 type Location struct {

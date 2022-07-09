@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"github.com/HarryWang29/alertService/alert"
 	"github.com/HarryWang29/alertService/job"
 	"github.com/HarryWang29/alertService/store"
@@ -42,6 +43,24 @@ func ParseConfig(bs []byte) (*RawConfig, error) {
 		return nil, errors.Wrap(err, "yaml.Unmarshal")
 	}
 	return c, nil
+}
+
+func ParseProvinceCodeFromBytes(js []byte) error {
+	m := make(map[string]interface{})
+	err := json.Unmarshal(js, &m)
+	if err != nil {
+		return errors.Wrap(err, "json.Unmarshal")
+	}
+	job.SetLocationMap(m)
+	return nil
+}
+
+func ParseProvinceCodeFromFile(path string) error {
+	bs, err := ioutil.ReadFile(path)
+	if err != nil {
+		return errors.Wrap(err, "ioutil.ReadFile")
+	}
+	return ParseProvinceCodeFromBytes(bs)
 }
 
 func parseStore(sm map[string]interface{}) (s store.Store, err error) {
