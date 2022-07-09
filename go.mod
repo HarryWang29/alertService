@@ -1,4 +1,4 @@
-module alertService
+module github.com/HarryWang29/alertService
 
 go 1.17
 
