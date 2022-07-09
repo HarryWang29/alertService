@@ -1,8 +1,8 @@
 package job
 
 import (
-	"alertService/alert"
-	"alertService/store"
+	"github.com/HarryWang29/alertService/alert"
+	"github.com/HarryWang29/alertService/store"
 	"github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
 )

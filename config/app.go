@@ -1,7 +1,7 @@
 package config
 
 import (
-	"alertService/job"
+	"github.com/HarryWang29/alertService/job"
 	"github.com/pkg/errors"
 )
 

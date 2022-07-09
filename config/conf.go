@@ -1,9 +1,9 @@
 package config
 
 import (
-	"alertService/alert"
-	"alertService/job"
-	"alertService/store"
+	"github.com/HarryWang29/alertService/alert"
+	"github.com/HarryWang29/alertService/job"
+	"github.com/HarryWang29/alertService/store"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"

@@ -1,9 +1,9 @@
 package job
 
 import (
-	"alertService/alert"
-	"alertService/store"
 	"fmt"
+	"github.com/HarryWang29/alertService/alert"
+	"github.com/HarryWang29/alertService/store"
 	"github.com/beego/beego/v2/client/httplib"
 	"github.com/iris-contrib/schema"
 	"github.com/sirupsen/logrus"

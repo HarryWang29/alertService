@@ -1,8 +1,8 @@
 package main
 
 import (
-	"alertService/config"
-	"alertService/job"
+	"github.com/HarryWang29/alertService/config"
+	"github.com/HarryWang29/alertService/job"
 	"os"
 )
 
