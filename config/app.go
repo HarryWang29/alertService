@@ -2,33 +2,33 @@ package config
 
 import (
 	"alertService/job"
-	"os"
+	"github.com/pkg/errors"
 )
 
 type App struct {
 	Jobs []job.Job
 }
 
-func New() *App {
-	//加载配置文件
-	configPath := ""
-	if os.Getenv("alert_service") == "dev" {
-		configPath = "./config_dev.yaml"
-	} else {
-		configPath = "./config.yaml"
-	}
+func NewApp() *App {
+	return &App{}
+}
 
-	//加载配置文件
-	config := Load(configPath)
-	//初始化日志
-	InitLog(config.Log)
+func (a *App) SetJobs(jobs []job.Job) {
+	a.Jobs = jobs
+}
 
+func (a *App) Parse(config *RawConfig) (err error) {
 	//初始化存储
-	s := parseStore(config.Store)
+	s, err := parseStore(config.Store)
+	if err != nil {
+		return errors.Wrap(err, "parseStore")
+	}
 	//初始化推送服务
-	a := parseAlert(config.Alert)
+	alert := parseAlert(config.Alert)
 	//初始化job
-	app := &App{}
-	app.Jobs = parseJobs(config.Jobs, s, a)
-	return app
+	a.Jobs, err = parseJobs(config.Jobs, s, alert)
+	if err != nil {
+		return errors.Wrap(err, "parseJobs")
+	}
+	return nil
 }

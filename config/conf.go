@@ -4,6 +4,7 @@ import (
 	"alertService/alert"
 	"alertService/job"
 	"alertService/store"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -16,21 +17,34 @@ type RawConfig struct {
 	Log   *LogConfig               `yaml:"log"`
 }
 
-func Load(path string) *RawConfig {
+func Load(path string) (*RawConfig, error) {
 	c := &RawConfig{}
 	bs, err := ioutil.ReadFile(path)
 	if err != nil {
-		logrus.Fatalf("ioutil.ReadFile err: %v", err)
+		return nil, errors.Wrap(err, "ioutil.ReadFile")
 	}
-	err = yaml.Unmarshal(bs, c)
+
+	c, err = ParseConfig(bs)
 	if err != nil {
-		logrus.Fatalf("yaml.Unmarshal error: %v", err)
+		return nil, errors.Wrap(err, "ParseConfig")
 	}
-	return c
+
+	//初始化日志
+	InitLog(c.Log)
+
+	return c, nil
 }
 
-func parseStore(sm map[string]interface{}) store.Store {
-	var s store.Store
+func ParseConfig(bs []byte) (*RawConfig, error) {
+	c := &RawConfig{}
+	err := yaml.Unmarshal(bs, c)
+	if err != nil {
+		return nil, errors.Wrap(err, "yaml.Unmarshal")
+	}
+	return c, nil
+}
+
+func parseStore(sm map[string]interface{}) (s store.Store, err error) {
 	switch sm["type"] {
 	case "memory":
 		s = store.NewMemory()
@@ -39,26 +53,32 @@ func parseStore(sm map[string]interface{}) store.Store {
 		dns := sm["dns"].(string)
 		s = store.NewMysql(dns)
 		logrus.Info("使用MySQL缓存")
+	default:
+		return nil, errors.New("未知的缓存类型")
 	}
-	return s
+	return s, nil
 }
 
-func parseJobs(jobs []map[string]interface{}, s store.Store, a alert.Alert) []job.Job {
-	js := make([]job.Job, 0)
+func parseJobs(jobs []map[string]interface{}, s store.Store, a alert.Alert) (js []job.Job, err error) {
+	js = make([]job.Job, 0)
 	for _, j := range jobs {
 		var jj job.Job
 		switch j["type"].(string) {
 		case "WeatherWarning":
 			jj = job.NewWeatherWarning(j, s, a)
 			logrus.Info("开启天气预警")
+		default:
+			return nil, errors.New("未知的任务类型")
 		}
 		js = append(js, jj)
 	}
-	return js
+	return js, nil
 }
 
-func parseAlert(am []map[string]interface{}) alert.Alert {
-	var a alert.Alert
+func parseAlert(am []map[string]interface{}) (a alert.Alert) {
+	if len(am) == 0 {
+		return nil
+	}
 	switch am[0]["type"] {
 	case "pushDeer":
 		pd := &alert.PushDeer{}

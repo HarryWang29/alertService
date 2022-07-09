@@ -203,8 +203,10 @@ func (w *WeatherWarning) Run() {
 		return
 	}
 	//发送推送
-	fmt.Println(pushBody)
-	w.Alert.Push(w.Title, pushBody)
+	if w.Alert != nil {
+		fmt.Println(pushBody)
+		w.Alert.Push(w.Title, pushBody)
+	}
 }
 
 func (w *WeatherWarning) getAlert(location *Location) (list []*weatherAlert, err error) {
